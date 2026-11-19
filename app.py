@@ -129,96 +129,86 @@ m3.metric(label="Bounce Rate", value="24.0%", delta="-3.1%")''',
     )
 
 # ==========================================
-# MODULE 4: LAYOUT CONTAINERS (DETAILED)
+# MODULE 4: LAYOUT CONTAINERS
 # ==========================================
 elif selected_module == "4. Layout Containers (Columns, Tabs, Expanders)":
-    st.header("4. Layout Containers (Columns, Tabs, Expanders, Container, Empty)")
+    st.header("4. Layout Containers (Columns, Tabs, Expanders & Containers)")
 
-    tab1, tab2, tab3, tab4 = st.tabs([
-        "1. Columns (Ratios & Gap)",
-        "2. Bordered Container",
-        "3. Expander",
-        "4. Empty Placeholder",
+    df_layout = pd.DataFrame({
+        "Day": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        "Sales": [12, 28, 19, 34, 42],
+        "Visitors": [120, 210, 175, 290, 360],
+    })
+
+    st.subheader("Rendered Output:")
+    tab_cols, tab_cont, tab_exp = st.tabs([
+        "Columns + Graphs",
+        "st.container() Box",
+        "Collapsible Expander",
     ])
 
-    # --- 1. COLUMNS ---
-    with tab1:
-        st.subheader("Columns with Custom Ratios & Gap")
+    with tab_cols:
+        st.caption("Equal columns (1:1) with charts side-by-side:")
         c1, c2 = st.columns(2)
         with c1:
-            left_col, right_col = st.columns([2, 1], gap="large")
-            with left_col:
-                st.info("Wide Column (2x width) — Best for main chart or summary.")
-            with right_col:
-                st.warning("Narrow Column (1x width) — Best for KPI or side note.")
+            st.markdown("**Sales Trend (Line Chart)**")
+            st.line_chart(df_layout.set_index("Day")["Sales"], height=220)
         with c2:
-            st.code(
-                '''left_col, right_col = st.columns([2, 1], gap="large")
-with left_col:
-    st.info("Wide Column (2x width)")
-with right_col:
-    st.warning("Narrow Column (1x width)")''',
-                language="python",
+            st.markdown("**Visitors Volume (Bar Chart)**")
+            st.bar_chart(df_layout.set_index("Day")["Visitors"], height=220)
+
+        st.markdown("---")
+        st.caption("Unequal ratio columns (2:1) — wider chart + summary notes:")
+        left_wide, right_narrow = st.columns([2, 1])
+        with left_wide:
+            st.area_chart(df_layout.set_index("Day")[["Sales", "Visitors"]], height=220)
+        with right_narrow:
+            st.info(
+                "Left column (2x) gives extra width to the chart while right column (1x) holds compact KPIs."
+            )
+            st.metric("Peak Day", "Fri", "+42 Sales")
+
+    with tab_cont:
+        with st.container(border=True):
+            st.markdown("**Grouped Container Card (`border=True`)**")
+            top_a, top_b = st.columns(2)
+            top_a.metric("Total Sales", "135")
+            top_b.metric("Total Visitors", "1,155")
+            st.line_chart(df_layout.set_index("Day")["Sales"], height=200)
+
+    with tab_exp:
+        with st.expander("View Technical Specifications & Layout Tips"):
+            st.write(
+                "- `st.columns(2)` or `st.columns([2, 1])` places charts and cards side-by-side.\n"
+                "- `st.container(border=True)` groups related metrics and charts inside a clean bordered card.\n"
+                "- `st.expander(...)` hides supplementary notes or syntax until clicked."
             )
 
-    # --- 2. BORDERED CONTAINER ---
-    with tab2:
-        st.subheader("Grouped Block with Border (`st.container(border=True)`)")
-        c1, c2 = st.columns(2)
-        with c1:
-            with st.container(border=True):
-                st.markdown("**Module Summary Card**")
-                st.caption("Grouped elements inside a single bordered box.")
-                st.metric("Active Modules", "7", "+1")
-        with c2:
-            st.code(
-                '''with st.container(border=True):
-    st.markdown("**Module Summary Card**")
-    st.caption("Grouped elements inside a single bordered box.")
-    st.metric("Active Modules", "7", "+1")''',
-                language="python",
-            )
+    st.subheader("Implementation Syntax:")
+    st.code(
+        '''# 1. Equal & Ratio Columns with Charts
+c1, c2 = st.columns(2)
+with c1:
+    st.line_chart(df_layout.set_index("Day")["Sales"], height=220)
+with c2:
+    st.bar_chart(df_layout.set_index("Day")["Visitors"], height=220)
 
-    # --- 3. EXPANDER ---
-    with tab3:
-        st.subheader("Collapsible Section (`st.expander`)")
-        c1, c2 = st.columns(2)
-        with c1:
-            with st.expander("View Technical Notes", expanded=False):
-                st.write(
-                    "Expanders keep secondary documentation or long tables collapsed until clicked."
-                )
-        with c2:
-            st.code(
-                '''with st.expander("View Technical Notes", expanded=False):
-    st.write("Expanders keep secondary documentation collapsed until clicked.")''',
-                language="python",
-            )
+left_wide, right_narrow = st.columns([2, 1])
+with left_wide:
+    st.area_chart(df_layout.set_index("Day")[["Sales", "Visitors"]], height=220)
+with right_narrow:
+    st.metric("Peak Day", "Fri", "+42 Sales")
 
-    # --- 4. EMPTY PLACEHOLDER ---
-    with tab4:
-        st.subheader("Dynamic Slot (`st.empty`)")
-        c1, c2 = st.columns(2)
-        with c1:
-            slot = st.empty()
-            slot.info("Status: Waiting for action...")
+# 2. Bordered Container
+with st.container(border=True):
+    st.markdown("**Grouped Container Card (`border=True`)**")
+    st.line_chart(df_layout.set_index("Day")["Sales"], height=200)
 
-            b1, b2 = st.columns(2)
-            if b1.button("Update Status"):
-                slot.success("Status: Updated dynamically via st.empty()!")
-            if b2.button("Clear Slot"):
-                slot.empty()
-        with c2:
-            st.code(
-                '''slot = st.empty()
-slot.info("Status: Waiting for action...")
-
-if st.button("Update Status"):
-    slot.success("Status: Updated dynamically!")
-if st.button("Clear Slot"):
-    slot.empty()''',
-                language="python",
-            )
+# 3. Expander
+with st.expander("View Technical Specifications & Layout Tips"):
+    st.write("Hidden details until clicked.")''',
+        language="python",
+    )
 
 # ==========================================
 # MODULE 5: TABULAR DATA PRESENTATION
