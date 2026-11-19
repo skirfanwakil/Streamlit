@@ -1,11 +1,12 @@
 """
 Project: Streamlit Interactive Reference & Component Showcase
 Author: skirfanwakil 306
-Description: A comprehensive interactive documentation app demonstrating core 
+Description: A comprehensive interactive documentation app demonstrating core
              Streamlit components alongside live rendered outputs and code syntax.
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -60,13 +61,11 @@ if selected_module == "1. Typography & Text Elements":
     with col2:
         st.subheader("Implementation Syntax:")
         st.code(
-            '''
-st.title("Primary Application Title")
+            '''st.title("Primary Application Title")
 st.header("Section Header")
 st.subheader("Subsection Header")
 st.write("Standard body text rendered via st.write().")
-st.markdown("Formatted text supporting **bold**, *italics*, and inline code.")
-        ''',
+st.markdown("Formatted text supporting **bold**, *italics*, and inline code.")''',
             language="python",
         )
 
@@ -96,17 +95,15 @@ elif selected_module == "2. Interactive Input Widgets":
     with col2:
         st.subheader("Implementation Syntax:")
         st.code(
-            '''
-user_name = st.text_input("Enter Operator Name:", "skirfanwakil")
+            '''user_name = st.text_input("Enter Operator Name:", "skirfanwakil")
 specialization = st.selectbox(
-    "Select Domain Specialization:", 
+    "Select Domain Specialization:",
     ("Information Technology", "Data Science", "Software Engineering")
 )
 proficiency = st.slider("Select Proficiency Rating:", min_value=1, max_value=10, value=8)
 
 if st.button("Confirm Selection"):
-    st.success(f"Profile Verified: {user_name} | Domain: {specialization} | Rating: {proficiency}/10")
-        ''',
+    st.success(f"Profile Verified: {user_name} | Domain: {specialization} | Rating: {proficiency}/10")''',
             language="python",
         )
 
@@ -124,12 +121,10 @@ elif selected_module == "3. Key Performance Metrics":
 
     st.subheader("Implementation Syntax:")
     st.code(
-        '''
-m1, m2, m3 = st.columns(3)
+        '''m1, m2, m3 = st.columns(3)
 m1.metric(label="Total Sales Volume", value="1,320 Units", delta="+12.4%")
 m2.metric(label="Gross Revenue", value="₹45,000", delta="+8.2%")
-m3.metric(label="Bounce Rate", value="24.0%", delta="-3.1%")
-    ''',
+m3.metric(label="Bounce Rate", value="24.0%", delta="-3.1%")''',
         language="python",
     )
 
@@ -155,8 +150,7 @@ elif selected_module == "4. Layout Containers (Columns, Tabs, Expanders)":
 
     st.subheader("Implementation Syntax:")
     st.code(
-        '''
-tab_cols, tab_exp = st.tabs(["Grid Columns Layout", "Collapsible Expander"])
+        '''tab_cols, tab_exp = st.tabs(["Grid Columns Layout", "Collapsible Expander"])
 
 with tab_cols:
     c1, c2 = st.columns(2)
@@ -165,8 +159,7 @@ with tab_cols:
 
 with tab_exp:
     with st.expander("View Technical Specifications"):
-        st.write("Expanders allow supplementary metadata or documentation to remain collapsed until requested.")
-    ''',
+        st.write("Expanders allow supplementary metadata or documentation to remain collapsed until requested.")''',
         language="python",
     )
 
@@ -189,8 +182,7 @@ elif selected_module == "5. Tabular Data Presentation":
     with col2:
         st.subheader("Implementation Syntax:")
         st.code(
-            '''
-import pandas as pd
+            '''import pandas as pd
 
 df_sample = pd.DataFrame({
     "Timeline": ["Mon", "Tue", "Wed", "Thu", "Fri"],
@@ -200,13 +192,12 @@ df_sample = pd.DataFrame({
 # Interactive table supporting sorting and scrolling
 st.dataframe(df_sample, use_container_width=True)
 
-# Static table alternative: st.table(df_sample)
-        ''',
+# Static table alternative: st.table(df_sample)''',
             language="python",
         )
 
 # ==========================================
-# MODULE 6: DATA VISUALIZATION
+# MODULE 6: DATA VISUALIZATION (10 CHARTS)
 # ==========================================
 elif selected_module == "6. Data Visualization (Native & Matplotlib)":
     st.header("6. Data Visualization (Native & Matplotlib)")
@@ -216,11 +207,12 @@ elif selected_module == "6. Data Visualization (Native & Matplotlib)":
         "Sales": [12, 28, 19, 34, 42],
         "Visitors": [120, 210, 175, 290, 360],
         "Duration_Min": [85, 92, 110, 78, 105],
+        "Rating_Score": [3.8, 4.2, 4.0, 4.6, 4.8],
     })
 
     tab_native, tab_mpl = st.tabs([
-        "Streamlit Native Charts",
-        "Matplotlib Charts (Pie, Hist, Barh)",
+        "Streamlit Native Charts (1–4)",
+        "Matplotlib Charts (5–10)",
     ])
 
     # --- TAB 1: STREAMLIT NATIVE CHARTS ---
@@ -327,6 +319,79 @@ st.pyplot(fig)''',
                 language="python",
             )
 
+        st.markdown("---")
+        st.subheader("8. Box Plot (`ax.boxplot`)")
+        c1, c2 = st.columns(2)
+        with c1:
+            fig_box, ax_box = plt.subplots(figsize=(5, 3))
+            ax_box.boxplot(df_viz["Duration_Min"], vert=True, patch_artist=True)
+            ax_box.set_ylabel("Duration (Minutes)")
+            ax_box.set_title("Runtime Spread & Median")
+            st.pyplot(fig_box)
+        with c2:
+            st.code(
+                '''fig, ax = plt.subplots(figsize=(5, 3))
+ax.boxplot(df_viz["Duration_Min"], vert=True, patch_artist=True)
+ax.set_ylabel("Duration (Minutes)")
+ax.set_title("Runtime Spread & Median")
+st.pyplot(fig)''',
+                language="python",
+            )
+
+        st.markdown("---")
+        st.subheader("9. Grouped Bar Chart (Two Metrics Side-by-Side)")
+        c1, c2 = st.columns(2)
+        with c1:
+            x = np.arange(len(df_viz["Day"]))
+            width = 0.35
+            fig_grp, ax_grp = plt.subplots(figsize=(5, 3))
+            ax_grp.bar(x - width / 2, df_viz["Sales"], width, label="Sales")
+            ax_grp.bar(
+                x + width / 2,
+                df_viz["Duration_Min"] / 4,
+                width,
+                label="Duration / 4",
+            )
+            ax_grp.set_xticks(x)
+            ax_grp.set_xticklabels(df_viz["Day"])
+            ax_grp.set_ylabel("Scaled Value")
+            ax_grp.legend()
+            st.pyplot(fig_grp)
+        with c2:
+            st.code(
+                '''x = np.arange(len(df_viz["Day"]))
+width = 0.35
+fig, ax = plt.subplots(figsize=(5, 3))
+ax.bar(x - width / 2, df_viz["Sales"], width, label="Sales")
+ax.bar(x + width / 2, df_viz["Duration_Min"] / 4, width, label="Duration / 4")
+ax.set_xticks(x)
+ax.set_xticklabels(df_viz["Day"])
+ax.legend()
+st.pyplot(fig)''',
+                language="python",
+            )
+
+        st.markdown("---")
+        st.subheader("10. Matplotlib Scatter Plot (`ax.scatter`)")
+        c1, c2 = st.columns(2)
+        with c1:
+            fig_sc, ax_sc = plt.subplots(figsize=(5, 3))
+            ax_sc.scatter(df_viz["Visitors"], df_viz["Sales"])
+            ax_sc.set_xlabel("Visitors")
+            ax_sc.set_ylabel("Sales")
+            ax_sc.set_title("Visitors vs. Sales")
+            st.pyplot(fig_sc)
+        with c2:
+            st.code(
+                '''fig, ax = plt.subplots(figsize=(5, 3))
+ax.scatter(df_viz["Visitors"], df_viz["Sales"])
+ax.set_xlabel("Visitors")
+ax.set_ylabel("Sales")
+ax.set_title("Visitors vs. Sales")
+st.pyplot(fig)''',
+                language="python",
+            )
+
 # ==========================================
 # MODULE 7: STATE MANAGEMENT & CACHING
 # ==========================================
@@ -347,16 +412,14 @@ elif selected_module == "7. State Management & Caching":
     with col2:
         st.subheader("Implementation Syntax:")
         st.code(
-            '''
-# Persist variable values across script reruns
+            '''# Persist variable values across script reruns
 if "counter" not in st.session_state:
     st.session_state.counter = 0
 
 if st.button("Increment Counter (+1)"):
     st.session_state.counter += 1
 
-st.write(f"Persistent Counter Value: {st.session_state.counter}")
-        ''',
+st.write(f"Persistent Counter Value: {st.session_state.counter}")''',
             language="python",
         )
 
