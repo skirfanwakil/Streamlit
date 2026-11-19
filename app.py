@@ -129,39 +129,96 @@ m3.metric(label="Bounce Rate", value="24.0%", delta="-3.1%")''',
     )
 
 # ==========================================
-# MODULE 4: LAYOUT CONTAINERS
+# MODULE 4: LAYOUT CONTAINERS (DETAILED)
 # ==========================================
 elif selected_module == "4. Layout Containers (Columns, Tabs, Expanders)":
-    st.header("4. Layout Containers (Columns, Tabs, Expanders)")
+    st.header("4. Layout Containers (Columns, Tabs, Expanders, Container, Empty)")
 
-    st.subheader("Rendered Output:")
-    tab_cols, tab_exp = st.tabs(["Grid Columns Layout", "Collapsible Expander"])
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "1. Columns (Ratios & Gap)",
+        "2. Bordered Container",
+        "3. Expander",
+        "4. Empty Placeholder",
+    ])
 
-    with tab_cols:
+    # --- 1. COLUMNS ---
+    with tab1:
+        st.subheader("Columns with Custom Ratios & Gap")
         c1, c2 = st.columns(2)
-        c1.info("Primary Left Container")
-        c2.warning("Secondary Right Container")
-
-    with tab_exp:
-        with st.expander("View Technical Specifications"):
-            st.write(
-                "Expanders allow supplementary metadata or documentation to remain collapsed until requested."
+        with c1:
+            left_col, right_col = st.columns([2, 1], gap="large")
+            with left_col:
+                st.info("Wide Column (2x width) — Best for main chart or summary.")
+            with right_col:
+                st.warning("Narrow Column (1x width) — Best for KPI or side note.")
+        with c2:
+            st.code(
+                '''left_col, right_col = st.columns([2, 1], gap="large")
+with left_col:
+    st.info("Wide Column (2x width)")
+with right_col:
+    st.warning("Narrow Column (1x width)")''',
+                language="python",
             )
 
-    st.subheader("Implementation Syntax:")
-    st.code(
-        '''tab_cols, tab_exp = st.tabs(["Grid Columns Layout", "Collapsible Expander"])
+    # --- 2. BORDERED CONTAINER ---
+    with tab2:
+        st.subheader("Grouped Block with Border (`st.container(border=True)`)")
+        c1, c2 = st.columns(2)
+        with c1:
+            with st.container(border=True):
+                st.markdown("**Module Summary Card**")
+                st.caption("Grouped elements inside a single bordered box.")
+                st.metric("Active Modules", "7", "+1")
+        with c2:
+            st.code(
+                '''with st.container(border=True):
+    st.markdown("**Module Summary Card**")
+    st.caption("Grouped elements inside a single bordered box.")
+    st.metric("Active Modules", "7", "+1")''',
+                language="python",
+            )
 
-with tab_cols:
-    c1, c2 = st.columns(2)
-    c1.info("Primary Left Container")
-    c2.warning("Secondary Right Container")
+    # --- 3. EXPANDER ---
+    with tab3:
+        st.subheader("Collapsible Section (`st.expander`)")
+        c1, c2 = st.columns(2)
+        with c1:
+            with st.expander("View Technical Notes", expanded=False):
+                st.write(
+                    "Expanders keep secondary documentation or long tables collapsed until clicked."
+                )
+        with c2:
+            st.code(
+                '''with st.expander("View Technical Notes", expanded=False):
+    st.write("Expanders keep secondary documentation collapsed until clicked.")''',
+                language="python",
+            )
 
-with tab_exp:
-    with st.expander("View Technical Specifications"):
-        st.write("Expanders allow supplementary metadata or documentation to remain collapsed until requested.")''',
-        language="python",
-    )
+    # --- 4. EMPTY PLACEHOLDER ---
+    with tab4:
+        st.subheader("Dynamic Slot (`st.empty`)")
+        c1, c2 = st.columns(2)
+        with c1:
+            slot = st.empty()
+            slot.info("Status: Waiting for action...")
+
+            b1, b2 = st.columns(2)
+            if b1.button("Update Status"):
+                slot.success("Status: Updated dynamically via st.empty()!")
+            if b2.button("Clear Slot"):
+                slot.empty()
+        with c2:
+            st.code(
+                '''slot = st.empty()
+slot.info("Status: Waiting for action...")
+
+if st.button("Update Status"):
+    slot.success("Status: Updated dynamically!")
+if st.button("Clear Slot"):
+    slot.empty()''',
+                language="python",
+            )
 
 # ==========================================
 # MODULE 5: TABULAR DATA PRESENTATION
